@@ -15,14 +15,17 @@
 #you may change the below self-explanatory variables
 
 #select input images from current directory
-image_extensions = [".jpg", ".png", ".bmp"]
+# added tif
+image_extensions = [".jpg", ".png", ".bmp", ".tif"]
 
 #directory to put output images (created automatically in current directory)
 out_directory = "crops"
 
 #after cropping, will resize down until the image firs in these dimensions. set to 0 to disable
-resize_width = 1920
-resize_height = 1080
+#resize_width = 1920
+#resize_height = 1080
+resize_width = 0
+resize_height = 0
 
 #uses low resolution to show crop (real image will look better than preview)
 fast_preview = True
@@ -36,16 +39,19 @@ allow_fractional_size = False
 #selection mode: can be 'click-drag' or 'scroll'
 #scroll: you select a resizable rectangle of a fixed aspect ratio that can be resized using the scroll wheel
 #click-drag: you click at the top left corner of your selection, then drag down to the bottom-right corner and release. hold shift during dragging to move the entire selection.
-initial_selection_mode = 'scroll'
+#initial_selection_mode = 'scroll'
+initial_selection_mode = 'click-drag'
 
 #displays rule-of-third guidelines
 show_rule_of_thirds = False
 
 #color of the selection box
-selection_box_color = 'yellow'
+#selection_box_color = 'yellow'
+selection_box_color = 'black'
 
 #whether the AR should be fixed by default
-default_fix_ratio = True
+#default_fix_ratio = True
+default_fix_ratio = False
 
 
 
@@ -245,7 +251,7 @@ class MyApp(Tk):
 
 		self.restrictSizes = IntVar()
 		self.inputs += [Checkbutton(self.controls, text="Perfect Pixel Ratio", variable=self.restrictSizes)]
-		self.inputs[-1].grid(row=0, column=8, sticky="nsew")
+		self.inputs[-1].grid(row=0, column=9, sticky="nsew")
 
 		self.imageLabel = Canvas(self, highlightthickness=0)
 		self.imageLabel.grid(row=0, column=0, sticky='nw', padx=0, pady=0)
@@ -389,7 +395,9 @@ class MyApp(Tk):
 			print "Error: no resize specified. Not resizing"
 			return
 		c = "convert \"" + os.path.join(self.inDir, self.currentName) + "\""
-		c += " -resize \"" + str(resize_width) + "x" + str(resize_height) + ">\""
+		if (resize_width > 0):
+			c += " -resize \"" + str(resize_width) + "x" + str(resize_height) + ">\""
+		c += " \"" + os.path.join(self.outDir, self.currentName) + "\""
 		c += " \"" + os.path.join(self.outDir, self.currentName) + "\""
 		print c
 		subprocess.Popen(c, shell=True)
